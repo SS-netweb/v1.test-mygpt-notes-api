@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
 
 servers:
-  - url: https://mygpt-backend-node.onrender.com
+  - url: https://v1-test-mygpt-notes-api.onrender.com
 
 paths:
   /status:
