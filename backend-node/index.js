@@ -91,3 +91,8 @@ app.use(cors({
   origin: 'https://chat.openai.com' // alleen MyGPT calls
 }));
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
