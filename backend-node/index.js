@@ -47,3 +47,11 @@ app.get('/notes', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Node backend running on port ${PORT}`);
 });
+
+// ✅ Dummy /notes endpoint
+app.get('/notes', (req, res) => {
+  res.json([
+    { id: 1, title: "Eerste notitie", content: "Dit is een testnotitie." },
+    { id: 2, title: "Tweede notitie", content: "Nog een testnotitie." }
+  ]);
+});
