@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: MyGPT Notes API
+  version: 1.0.0
+  description: Secure API for MyGPT integration
+
+servers:
+  - url: https://mygpt-backend-node.onrender.com
+    description: Production Render instance
+
+paths:
+  /status:
+    get:
+      summary: API status check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                status: OK
+                backend: Node
+                version: 1.0.0
+
+  /notes:
+    get:
+      summary: Fetch all notes
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              example:
+                - id: 1
+                  title: First Note
+                  content: This is an example note.
+                  createdAt: 2025-08-04T12:00:00Z
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
