@@ -5,6 +5,9 @@ services:
     plan: free
     branch: main
     rootDir: backend-node
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
     autoDeploy: false
+    envVars:
+      - key: NODE_ENV
+        value: production

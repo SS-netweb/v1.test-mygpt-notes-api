@@ -1,20 +1,33 @@
-const rateLimit = require('express-rate-limit');
-
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minuut
-  max: 100 // max 100 requests per minuut
-});
-
-app.use(limiter);
-
 // backend-node/index.js
 
 const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const rateLimit = require('express-rate-limit');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 📋 Middleware
 app.use(express.json()); // nodig voor POST requests met JSON
+
+// CORS configuratie
+app.use(cors({
+  origin: 'https://chat.openai.com' // alleen MyGPT calls
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuut
+  max: 100 // max 100 requests per minuut
+});
+app.use(limiter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 
 // 📋 Mock data
 let notes = [
@@ -75,24 +88,13 @@ app.post('/notes', (req, res) => {
   res.status(201).json(newNote);
 });
 
-// ▶️ Start server
-app.listen(PORT, () => {
-  console.log(`Node backend running on port ${PORT}`);
-});
-
-const path = require('path');
-
+// 📁 OpenAPI documentation endpoint
 app.get('/docs/openapi.yaml', (req, res) => {
   res.sendFile(path.join(__dirname, '../docs/openapi.yaml'));
 });
 
-const cors = require('cors');
-app.use(cors({
-  origin: 'https://chat.openai.com' // alleen MyGPT calls
-}));
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
+// ▶️ Start server
+app.listen(PORT, () => {
+  console.log(`Node backend running on port ${PORT}`);
 });
 
