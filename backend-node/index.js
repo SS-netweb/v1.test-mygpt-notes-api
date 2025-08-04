@@ -85,3 +85,9 @@ const path = require('path');
 app.get('/docs/openapi.yaml', (req, res) => {
   res.sendFile(path.join(__dirname, '../docs/openapi.yaml'));
 });
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'https://chat.openai.com' // alleen MyGPT calls
+}));
+
