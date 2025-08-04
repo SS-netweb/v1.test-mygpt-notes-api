@@ -70,3 +70,9 @@ app.post('/notes', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Node backend running on port ${PORT}`);
 });
+
+const path = require('path');
+
+app.get('/docs/openapi.yaml', (req, res) => {
+  res.sendFile(path.join(__dirname, '../docs/openapi.yaml'));
+});
