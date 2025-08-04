@@ -1,10 +1,14 @@
 // backend-node/index.js
+
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 📋 Middleware
+app.use(express.json()); // nodig voor POST requests met JSON
+
 // 📋 Mock data
-const notes = [
+let notes = [
   {
     id: 1,
     title: "Welcome Note",
@@ -29,7 +33,7 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// ✅ /status endpoint
+// ✅ Status
 app.get('/status', (req, res) => {
   res.json({
     status: "OK",
@@ -38,20 +42,31 @@ app.get('/status', (req, res) => {
   });
 });
 
-// 🗒️ /notes endpoint
+// 📖 GET /notes
 app.get('/notes', (req, res) => {
   res.json(notes);
+});
+
+// 🆕 POST /notes (mocked)
+app.post('/notes', (req, res) => {
+  const { title, content } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ error: "Title and content are required." });
+  }
+
+  const newNote = {
+    id: notes.length + 1,
+    title,
+    content,
+    createdAt: new Date().toISOString()
+  };
+
+  notes.push(newNote); // tijdelijke opslag in geheugen
+  res.status(201).json(newNote);
 });
 
 // ▶️ Start server
 app.listen(PORT, () => {
   console.log(`Node backend running on port ${PORT}`);
-});
-
-// ✅ Dummy /notes endpoint
-app.get('/notes', (req, res) => {
-  res.json([
-    { id: 1, title: "Eerste notitie", content: "Dit is een testnotitie." },
-    { id: 2, title: "Tweede notitie", content: "Nog een testnotitie." }
-  ]);
 });
