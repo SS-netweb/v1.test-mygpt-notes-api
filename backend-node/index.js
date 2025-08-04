@@ -76,3 +76,13 @@ const path = require('path');
 app.get('/docs/openapi.yaml', (req, res) => {
   res.sendFile(path.join(__dirname, '../docs/openapi.yaml'));
 });
+
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuut
+  max: 100 // max 100 requests per minuut
+});
+
+app.use(limiter);
+
