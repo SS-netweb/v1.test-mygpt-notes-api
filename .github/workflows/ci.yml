@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# 👉 Wanneer moet deze workflow draaien?
 on: [push, pull_request]
 
 jobs:
@@ -12,39 +11,64 @@ jobs:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
 
-      # 2. Node backend opzetten
+      # ================================
+      # 🔧 Node.js backend setup & check
+      # ================================
+
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: 📦 Install Node dependencies
-        run: cd backend-node && npm install
+        run: npm install
+        working-directory: ./backend-node
 
-      - name: ▶️ Dummy: Start Node backend
-        run: node backend-node/index.js & sleep 5
+      - name: ▶️ Start Node backend (dummy)
+        run: node index.js & sleep 5
+        working-directory: ./backend-node
+        shell: bash
 
-      - name: ✅ Dummy: Audit Node dependencies
-        run: cd backend-node && npm audit --omit dev || true
-        # 👉 Geeft waarschuwingen over packages (optioneel negeren in dev mode)
+      - name: ✅ Audit Node dependencies
+        run: npm audit --omit dev
+        working-directory: ./backend-node
+        shell: bash
+        continue-on-error: true
 
-      # 3. Python backend opzetten
+      # =================================
+      # 🐍 Python backend setup & check
+      # =================================
+
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: 📦 Install Python dependencies
-        run: cd backend-python && pip install flask
+        run: |
+          if [ -f requirements.txt ]; then
+            pip3 install -r requirements.txt
+          else
+            pip3 install flask
+          fi
+        working-directory: ./backend-python
+        shell: bash
 
-      - name: ▶️ Dummy: Start Python backend
-        run: python3 backend-python/app.py & sleep 5
+      - name: ▶️ Start Python backend (dummy)
+        run: python3 app.py & sleep 5
+        working-directory: ./backend-python
+        shell: bash
 
-      - name: ✅ Dummy: Check Python dependencies
-        run: cd backend-python && pip check || true
-        # 👉 Controleert of alle dependencies compatibel zijn
+      - name: ✅ Check Python dependencies
+        run: pip3 check
+        working-directory: ./backend-python
+        shell: bash
+        continue-on-error: true
 
-      # 4. Secret scanning
+      # ===============================
+      # 🔐 Secretscan met TruffleHog
+      # ===============================
+
       - name: 🔐 Secret scan with TruffleHog
         uses: trufflesecurity/trufflehog@main
         with:
